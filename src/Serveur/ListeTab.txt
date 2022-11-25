@@ -1,0 +1,4 @@
+Olona//Numero,Nom,Adresse//
+Personne//Numero,Nom,Adresse//
+Produit//Nom,NumPro,Prix//
+Hafa//Nom//,
