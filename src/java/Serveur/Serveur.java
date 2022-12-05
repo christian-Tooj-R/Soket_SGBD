@@ -7,14 +7,14 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import fonction.Fonction;
-
 import java.util.Scanner;
 
 public class Serveur extends Thread {
     @Override
     public void run() {
         try {
-            ServerSocket ss = new ServerSocket(new Fonction().getPort());
+            Scanner sc = new Scanner(System.in);
+            ServerSocket ss = new ServerSocket(new Connecte().getPort());
             while (true) {
                 Socket s = ss.accept();
                 System.out.println("client connecte");

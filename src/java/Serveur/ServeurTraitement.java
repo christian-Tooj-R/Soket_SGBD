@@ -28,12 +28,13 @@ public class ServeurTraitement extends Thread {
                 BufferedReader lire = new BufferedReader(reader);
                 String req = lire.readLine();
                 MyPrint response = new MyPrint(out);
-                Fonction fonction = new Fonction();
-                response.println(fonction.fonction(req));
-                response.flush();
+                Fonction fonction = new Fonction(out);
+                fonction.fonction(req);
+                fonction.print("\n");
+                fonction.flush();
             }
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
 
     }

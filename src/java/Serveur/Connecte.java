@@ -1,4 +1,4 @@
-package fonction;
+package serveur;
 
 import java.awt.event.*;
 import java.io.*;
@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Vector;
 
-public class Fonction {
+public class Connecte {
 
     public int getPort() throws Exception {
         BufferedReader bff = new BufferedReader(new FileReader("../../conf/Myconfig.conf"));

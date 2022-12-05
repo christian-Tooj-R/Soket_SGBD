@@ -14,27 +14,16 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Vector;
 
-public class Fonction {
+public class Fonction extends PrintWriter {
+    public Fonction(OutputStream out) {
+        super(out);
+        // TODO Auto-generated constructor stub
+    }
+
     String Operation;
     String Table;
     String requete;
     Vector<String> list_tab = new Vector<>();
-
-    /***********************/
-    public int getPort() throws Exception {
-        BufferedReader bff = new BufferedReader(new FileReader("../../conf/Myconfig.conf"));
-        int port = Integer.parseInt(bff.readLine().split(":")[1]);
-        return port;
-    }
-
-    public String getIp() throws Exception {
-        BufferedReader bff = new BufferedReader(new FileReader("../../conf/Myconfig.conf"));
-        String lin = bff.readLine();
-        if (lin != null) {
-            lin = bff.readLine();
-        }
-        return lin.split(":")[1];
-    }
 
     /**********************/
     /*
@@ -65,7 +54,7 @@ public class Fonction {
         return new Table();
     }
 
-    public void print(Table tab) {
+    public void println(Table tab) {
         int count2 = 0;
         String linear = "";
         for (int i = 0; i < (tab.getCol_Name().length * 16); i++) {
@@ -74,30 +63,26 @@ public class Fonction {
 
         for (int i = 0; i < tab.getCol_Name().length; i++) {
             if (tab.getCol_Name()[i].length() < 7) {
-                System.out.print(tab.getCol_Name()[i] + "\t\t" + "|");
+                this.print(tab.getCol_Name()[i] + "\t\t" + "|");
             } else {
-                System.out.print(tab.getCol_Name()[i] + "\t" + "|");
+                this.print(tab.getCol_Name()[i] + "\t" + "|");
             }
         }
 
-        System.out.println("\n" + linear);
+        this.println("\n" + linear);
         while (count2 < tab.getLine().size()) {
             String[] str = tab.getLine().get(count2).split(",");
             for (int j = 0; j < str.length; j++) {
-                // System.out.print(str[j]+"\t");
                 if (str[j].length() < 7) {
-                    System.out.print(str[j] + "\t\t" + "|");
-                    // vecs.add(str[i]+"\t\t"+"|");
+                    this.print(str[j] + "\t\t" + "|");
                 } else {
-                    System.out.print(str[j] + "\t" + "|");
-                    // vecs.add(str[i]+"\t"+"|");
+                    this.print(str[j] + "\t" + "|");
                 }
             }
-            System.out.print("\n");
-
+            this.print("\n");
             count2++;
         }
-        System.out.println(linear);
+        this.println(linear);
     }
 
     public void fonction(String requete) throws Exception {
@@ -116,7 +101,10 @@ public class Fonction {
         if (req.length >= 5 && req.length != 7) {
             tab_compare = find_tab(req[5]);
         }
-        if (req.length == 7) {
+
+        if (this.Operation.equals("create") || this.Operation.equals("insert")) {
+            Ecrire(requete);
+        } else if (req.length == 7) {
             String[] sous_req = requete.split("//");
             String[] str1 = sous_req[0].split(" ");
             String[] str2 = sous_req[1].split(" ");
@@ -127,9 +115,6 @@ public class Fonction {
 
             divide(vecDiv1, vecDiv2, requete);
         }
-        if (this.Operation.equals("create") || this.Operation.equals("insert")) {
-            Ecrire(requete);
-        }
         if (this.Operation.equals("select")) {
             if (req.length <= 4 && req[1].equals("*")) {
                 selection(tab_enjeu, "");
@@ -137,44 +122,49 @@ public class Fonction {
                 String valeur = req[5] + " " + req[6] + " " + req[7];
                 selection(tab_enjeu, valeur);
             } else if (req.length <= 4 && !req[1].equals("*")) {
-                print(projection(tab_enjeu, req[1]));
+                println(projection(tab_enjeu, req[1]));
             } else if (req[1].equals("difference")) {
 
                 if (requete.contains("between") && requete.contains("and")) {
-                    print(difference(tab_enjeu, tab_compare));
+                    println(difference(tab_enjeu, tab_compare));
                 } else {
                     throw new Exception("Erreur de syntaxe");
                 }
             } else if (req[1].equals("intersection")) {
 
                 if (requete.contains("between") && requete.contains("and")) {
-                    print(intersection(tab_enjeu, tab_compare));
+                    println(intersection(tab_enjeu, tab_compare));
                 } else {
                     throw new Exception("Erreur de syntaxe");
                 }
             } else if (req[1].equals("produit")) {
 
                 if (requete.contains("between") && requete.contains("and")) {
-                    print(produit_cartesien(tab_enjeu, tab_compare));
+                    println(produit_cartesien(tab_enjeu, tab_compare));
                 } else {
                     throw new Exception("Erreur de syntaxe");
                 }
             } else if (req[1].equals("union")) {
 
                 if (requete.contains("of") && requete.contains("and")) {
-                    print(union(tab_enjeu, tab_compare));
+                    println(union(tab_enjeu, tab_compare));
                 } else {
                     throw new Exception("Erreur de syntaxe");
                 }
             } else if (req[1].equals("join")) {
 
                 if (requete.contains("of") && requete.contains("and")) {
-                    print(jointure(tab_enjeu, tab_compare, requete));
+                    println(jointure(tab_enjeu, tab_compare, requete));
                 } else {
                     throw new Exception("Erreur de syntaxe");
                 }
             }
         }
+        // if (this.Operation.equals("drop")) {
+        // File file = new File(req[2] + ".txt");
+        // file.delete();
+        // print("Table supprimee");
+        // }
     }
 
     // insert into Olona values ( okay,lesy,bg )
@@ -192,8 +182,7 @@ public class Fonction {
                 Table table = new Table();
                 table.setName(requete[2]);
                 table.setCol_Name(requete[4].split(","));
-                // this.list_tab.add(table);
-                System.out.println("Table créée");
+                println("Table créée");
                 this.Ecrire("insert into ListeTab values ( " + requete[2] + "//" + requete[4] + "// )");
             } else if (requete[0].equals("insert")) {
                 File file = new File(requete[2] + ".txt");
@@ -215,7 +204,7 @@ public class Fonction {
             }
 
         } catch (Exception e) {
-
+            print(e);
         }
     }
 
@@ -288,13 +277,13 @@ public class Fonction {
 
         for (int i = 0; i < tab.getCol_Name().length; i++) {
             if (tab.getCol_Name()[i].length() < 7) {
-                System.out.print(tab.getCol_Name()[i] + "\t\t" + "|");
+                this.print(tab.getCol_Name()[i] + "\t\t" + "|");
             } else {
-                System.out.print(tab.getCol_Name()[i] + "\t" + "|");
+                this.print(tab.getCol_Name()[i] + "\t" + "|");
             }
         }
 
-        System.out.println("\n" + linear);
+        this.println("\n" + linear);
         while (count < vect.size()) {
             String[] str = vect.get(count).split(",");
             for (int i = 0; i < str.length; i++) {
@@ -305,27 +294,27 @@ public class Fonction {
                         str = vect.get(count).split(",");
                         for (int j = 0; j < str.length; j++) {
                             if (str[j].length() < 7) {
-                                System.out.print(str[j] + "\t\t" + "|");
+                                this.print(str[j] + "\t\t" + "|");
                             } else {
-                                System.out.print(str[j] + "\t" + "|");
+                                this.print(str[j] + "\t" + "|");
                             }
                         }
-                        System.out.print("\n");
+                        this.print("\n");
                     }
                 } else {
                     if (str[i].length() < 7) {
-                        System.out.print(str[i] + "\t\t" + "|");
+                        this.print(str[i] + "\t\t" + "|");
                         vecs.add(str[i] + "\t\t" + "|");
                     } else {
-                        System.out.print(str[i] + "\t" + "|");
+                        this.print(str[i] + "\t" + "|");
                         vecs.add(str[i] + "\t" + "|");
                     }
                 }
             }
-            System.out.print(line);
+            this.print(line);
             count++;
         }
-        System.out.println(linear);
+        this.println(linear);
 
     }
 

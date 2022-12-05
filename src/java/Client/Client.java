@@ -30,6 +30,7 @@ public class Client {
                 @Override
                 public void run() {
                     while (true) {
+                        System.out.print("\nChriSql>");
                         msg = sc.nextLine();
                         out.println(msg);
                         out.flush();
@@ -47,7 +48,7 @@ public class Client {
                     try {
                         msg = in.readLine();
                         while (msg != null) {
-                            System.out.println("Serveur : " + msg);
+                            System.out.print("\n" + msg);
                             msg = in.readLine();
                         }
                         System.out.println("Serveur déconecté");
