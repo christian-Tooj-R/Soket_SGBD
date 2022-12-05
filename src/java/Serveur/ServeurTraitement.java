@@ -7,8 +7,12 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import fonction.Fonction;
+import serveur.MyPrint;
+
 public class ServeurTraitement extends Thread {
     Socket socket;
+    String srt;
 
     public ServeurTraitement(Socket s) {
         super();
@@ -23,11 +27,14 @@ public class ServeurTraitement extends Thread {
                 OutputStream out = socket.getOutputStream();
                 BufferedReader lire = new BufferedReader(reader);
                 String req = lire.readLine();
-                // PrintWriter response = new PrintWriter(out);
-                System.out.println(req);
+                MyPrint response = new MyPrint(out);
+                Fonction fonction = new Fonction();
+                response.println(fonction.fonction(req));
+                response.flush();
             }
         } catch (Exception e) {
-            // TODO: handle exception
+            System.out.println(e);
         }
+
     }
 }
