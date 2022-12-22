@@ -1,4 +1,6 @@
-Tena ialana tsiny Ramose nohon ny fahatarana nohon ilay lanjan ny video izay tsy nety nahena
+Tena ialana tsiny Ramose nohon ny fahatarana nohon ilay lanjan ny video izay tsy nety nahena.Mankasitraka
+FANAMARIHANA: ilay interface java tsy voarain ilay capture video dia tsy nipoitra a partir de 2min18s pres
+
 ----------SYNTAXE----------
 creation table = create table TabName ( value ) //Access table
 insertion = insert into tabName values ( ... )
@@ -14,6 +16,6 @@ jointure = select join of Table1 and Table2 where value1 = value2
 ----------------COMPTE ADMIN-------------------------
 Username: admin
 password: admin
-
+Connexion admin -> syntaxe "isadmin"
 ------CONFIGURATION IP-----
 Repertorié dans Socket_SGBD/src/conf/Myconfig.conf
