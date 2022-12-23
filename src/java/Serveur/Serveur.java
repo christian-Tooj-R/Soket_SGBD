@@ -15,6 +15,7 @@ public class Serveur extends Thread {
         try {
             Scanner sc = new Scanner(System.in);
             ServerSocket ss = new ServerSocket(new Connecte().getPort());
+            System.out.println("En attente de Client...");
             while (true) {
                 Socket s = ss.accept();
                 System.out.println("client connecte");

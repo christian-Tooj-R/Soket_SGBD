@@ -1,8 +1,9 @@
 package table;
 
+import java.io.Serializable;
 import java.util.Vector;
 
-public class Table {
+public class Table implements Serializable {
     String Name;
     String[] Col_Name;
     Vector<String> line;

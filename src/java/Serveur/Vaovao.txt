@@ -1,6 +1,0 @@
-Papaye,1,3000,
-Banane,1,2000,
-Fraise,3,6000,
-Banane,2,2000,
-Banane,3,2000,
-Fraise,1,2000,

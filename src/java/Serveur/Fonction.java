@@ -14,10 +14,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Vector;
 
-public class Fonction extends PrintWriter {
+public class Fonction extends PrintWriter implements Serializable {
     public Fonction(OutputStream out) {
         super(out);
-        // TODO Auto-generated constructor stub
     }
 
     String Operation;
@@ -39,6 +38,16 @@ public class Fonction extends PrintWriter {
      * }
      */
 
+    public Table showTable() {
+        Table tab = new Table();
+        Vector<String> vect = read("ListeTab");
+        for (int i = 0; i < vect.size(); i++) {
+            String[] str = vect.get(i).split("//");
+            tab.getLine().add(str[0] + ",");
+        }
+        return tab;
+    }
+
     public Table find_tab(String name) {
 
         for (int i = 0; i < list_tab.size(); i++) {
@@ -57,15 +66,17 @@ public class Fonction extends PrintWriter {
     public void println(Table tab) {
         int count2 = 0;
         String linear = "";
-        for (int i = 0; i < (tab.getCol_Name().length * 16); i++) {
-            linear = linear + "-";
-        }
+        if (!tab.getCol_Name().equals(null)) {
+            for (int i = 0; i < (tab.getCol_Name().length * 16); i++) {
+                linear = linear + "-";
+            }
 
-        for (int i = 0; i < tab.getCol_Name().length; i++) {
-            if (tab.getCol_Name()[i].length() < 7) {
-                this.print(tab.getCol_Name()[i] + "\t\t" + "|");
-            } else {
-                this.print(tab.getCol_Name()[i] + "\t" + "|");
+            for (int i = 0; i < tab.getCol_Name().length; i++) {
+                if (tab.getCol_Name()[i].length() < 7) {
+                    this.print(tab.getCol_Name()[i] + "\t\t" + "|");
+                } else {
+                    this.print(tab.getCol_Name()[i] + "\t" + "|");
+                }
             }
         }
 
@@ -85,86 +96,106 @@ public class Fonction extends PrintWriter {
         this.println(linear);
     }
 
-    public void fonction(String requete) throws Exception {
-        this.requete = requete;
-        String[] req = this.requete.split(" ");
-        this.Operation = req[0];
-        this.Table = req[3];
-        // select Nom,NumCli from Produit//select Numero from Olona
-        // select difference between Olona and Biby
-        list_tab = read("ListeTab");
+    public void fonction(String requete, String admin) throws Exception {
+        try {
 
-        Table tab_enjeu = find_tab(req[3]);
-        Table tab_compare = null;
-        Table vecDiv1 = null;
-        Table vecDiv2 = null;
-        if (req.length >= 5 && req.length != 7) {
-            tab_compare = find_tab(req[5]);
-        }
+            this.requete = requete;
 
-        if (this.Operation.equals("create") || this.Operation.equals("insert")) {
-            Ecrire(requete);
-        } else if (req.length == 7) {
-            String[] sous_req = requete.split("//");
-            String[] str1 = sous_req[0].split(" ");
-            String[] str2 = sous_req[1].split(" ");
-            Table tab_1 = find_tab(str1[3]);
-            Table tab_2 = find_tab(str2[3]);
-            vecDiv1 = projection(tab_1, str1[1]);
-            vecDiv2 = projection(tab_2, str2[1]);
+            String[] req = this.requete.split(" ");
+            this.Operation = req[0];
+            this.Table = req[3];
+            // select Nom,NumCli from Produit//select Numero from Olona
+            // select difference between Olona and Biby
+            if (this.Table.equalsIgnoreCase("tab")) {
+                println(showTable());
+            }
+            list_tab = read("ListeTab");
 
-            divide(vecDiv1, vecDiv2, requete);
-        }
-        if (this.Operation.equals("select")) {
-            if (req.length <= 4 && req[1].equals("*")) {
-                selection(tab_enjeu, "");
-            } else if (req.length > 4 && req[1].equals("*")) {
-                String valeur = req[5] + " " + req[6] + " " + req[7];
-                selection(tab_enjeu, valeur);
-            } else if (req.length <= 4 && !req[1].equals("*")) {
-                println(projection(tab_enjeu, req[1]));
-            } else if (req[1].equals("difference")) {
+            Table tab_enjeu = find_tab(req[3]);
+            Table tab_compare = null;
+            Table vecDiv1 = null;
+            Table vecDiv2 = null;
+            if (req.length >= 5 && req.length != 7) {
+                tab_compare = find_tab(req[5]);
+            }
 
-                if (requete.contains("between") && requete.contains("and")) {
-                    println(difference(tab_enjeu, tab_compare));
-                } else {
-                    throw new Exception("Erreur de syntaxe");
+            if (this.Operation.equals("create") || this.Operation.equals("insert")) {
+                Ecrire(requete);
+            } else if (req.length == 7) {
+                String[] sous_req = requete.split("//");
+                String[] str1 = sous_req[0].split(" ");
+                String[] str2 = sous_req[1].split(" ");
+                Table tab_1 = find_tab(str1[3]);
+                Table tab_2 = find_tab(str2[3]);
+                vecDiv1 = projection(tab_1, str1[1]);
+                vecDiv2 = projection(tab_2, str2[1]);
+
+                divide(vecDiv1, vecDiv2, requete);
+            }
+            if (this.Operation.equals("select")) {
+                if (req.length <= 4 && req[1].equals("*")) {
+                    selection(tab_enjeu, "");
+                } else if (req.length > 4 && req[1].equals("*")) {
+                    String valeur = req[5] + " " + req[6] + " " + req[7];
+                    selection(tab_enjeu, valeur);
+                } else if (req.length <= 4 && !req[1].equals("*")) {
+                    println(projection(tab_enjeu, req[1]));
+                } else if (req[1].equals("difference")) {
+
+                    if (requete.contains("between") && requete.contains("and")) {
+                        println(difference(tab_enjeu, tab_compare));
+                    } else {
+                        throw new Exception("Erreur de syntaxe");
+                    }
+                } else if (req[1].equals("intersection")) {
+
+                    if (requete.contains("between") && requete.contains("and")) {
+                        println(intersection(tab_enjeu, tab_compare));
+                    } else {
+                        throw new Exception("Erreur de syntaxe");
+                    }
+                } else if (req[1].equals("produit")) {
+
+                    if (requete.contains("between") && requete.contains("and")) {
+                        println(produit_cartesien(tab_enjeu, tab_compare));
+                    } else {
+                        throw new Exception("Erreur de syntaxe");
+                    }
+                } else if (req[1].equals("union")) {
+
+                    if (requete.contains("of") && requete.contains("and")) {
+                        println(union(tab_enjeu, tab_compare));
+                    } else {
+                        throw new Exception("Erreur de syntaxe");
+                    }
+                } else if (req[1].equals("join")) {
+
+                    if (requete.contains("of") && requete.contains("and")) {
+                        println(jointure(tab_enjeu, tab_compare, requete));
+                    } else {
+                        throw new Exception("Erreur de syntaxe");
+                    }
                 }
-            } else if (req[1].equals("intersection")) {
+            } else if (this.Operation.equals("drop")) {
+                try {
+                    if (admin.equals("yes")) {
+                        Path path = Paths.get(req[3] + ".txt");
+                        if (Files.deleteIfExists(path)) {
+                            print(" deleted");
+                        } else {
+                            print("failed to delete ");
+                        }
+                    } else {
+                        throw new Exception("vous n'avez pas le droit de supprimer");
+                    }
 
-                if (requete.contains("between") && requete.contains("and")) {
-                    println(intersection(tab_enjeu, tab_compare));
-                } else {
-                    throw new Exception("Erreur de syntaxe");
-                }
-            } else if (req[1].equals("produit")) {
-
-                if (requete.contains("between") && requete.contains("and")) {
-                    println(produit_cartesien(tab_enjeu, tab_compare));
-                } else {
-                    throw new Exception("Erreur de syntaxe");
-                }
-            } else if (req[1].equals("union")) {
-
-                if (requete.contains("of") && requete.contains("and")) {
-                    println(union(tab_enjeu, tab_compare));
-                } else {
-                    throw new Exception("Erreur de syntaxe");
-                }
-            } else if (req[1].equals("join")) {
-
-                if (requete.contains("of") && requete.contains("and")) {
-                    println(jointure(tab_enjeu, tab_compare, requete));
-                } else {
-                    throw new Exception("Erreur de syntaxe");
+                } catch (Exception e) {
+                    println(e.getMessage());
                 }
             }
+        } catch (Exception e) {
+            println(e.getMessage());
         }
-        // if (this.Operation.equals("drop")) {
-        // File file = new File(req[2] + ".txt");
-        // file.delete();
-        // print("Table supprimee");
-        // }
     }
 
     // insert into Olona values ( okay,lesy,bg )
@@ -204,7 +235,7 @@ public class Fonction extends PrintWriter {
             }
 
         } catch (Exception e) {
-            print(e);
+            println(e.getMessage());
         }
     }
 
@@ -220,19 +251,23 @@ public class Fonction extends PrintWriter {
                 v.add(lin);
                 lin = br.readLine();
             }
+            br.close();
+            read.close();
         } catch (Exception e) {
 
         }
         return v;
     }
 
-    public Vector<String> readi(Table table) { // lecture fichier
+    public Vector<String> readi(Table table) throws Exception { // lecture fichier
         Vector<String> v = new Vector<>();
         // String[] requete=req.split(" ");
+        FileReader read = null;
+        BufferedReader br = null;
         File file = new File(table.getName() + ".txt");
         try {
-            FileReader read = new FileReader(file);
-            BufferedReader br = new BufferedReader(read);
+            read = new FileReader(file);
+            br = new BufferedReader(read);
             String lin = br.readLine();
             while (lin != null) {
                 v.add(lin);
@@ -240,8 +275,12 @@ public class Fonction extends PrintWriter {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            br.close();
+            read.close();
+            table.setLine(v);
+
         }
-        table.setLine(v);
         return table.getLine();
     }
 

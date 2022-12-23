@@ -2,5 +2,8 @@ Olona//Numero,Nom,Adresse//
 Personne//Numero,Nom,Adresse//
 Produit//Nom,NumPro,Prix//
 Hafa//Nom//,
-Hendry//DimensionVody,TauxProbleme//,
-Hendry//DimensionVody,TauxProbleme//,
+nouveau//nom,prenom,classe//,
+exemple//valeur,niveau,classe//,
+etudiant//nom,prenom,classe//,
+nouveautable//nom,valeur//,
+etudiant//nom,prenom,classe//,

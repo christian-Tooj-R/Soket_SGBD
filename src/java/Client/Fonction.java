@@ -1,4 +1,4 @@
-package fonction;
+package fonc;
 
 import java.awt.event.*;
 import java.io.*;
@@ -9,6 +9,10 @@ import java.util.List;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Vector;
+
+import javax.swing.JTable;
+
+import table.Table;
 
 public class Fonction {
 
@@ -25,6 +29,24 @@ public class Fonction {
             lin = bff.readLine();
         }
         return lin.split(":")[1];
+    }
+
+    public JTable getTable(Table table) {
+        return new JTable(VectortoObject(table.getLine()), table.getCol_Name());
+    }
+
+    public Object[][] VectortoObject(Vector<String> vect) {
+        int i = 0;
+        Object[][] donnee = new Object[vect.get(0).split(",").length][vect.size()];
+        while (i < vect.size()) {
+            for (int j = 0; j < donnee.length; j++) {
+                for (int y = 0; y < donnee[j].length; y++) {
+                    donnee[j][y] = vect.get(i);
+                }
+                i++;
+            }
+        }
+        return donnee;
     }
 
 }
